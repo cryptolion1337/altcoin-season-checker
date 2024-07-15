@@ -5,6 +5,10 @@ export default {
       // Proxy API requests to CoinGecko
       const apiUrl = new URL(url.pathname.replace('/api/', ''), 'https://api.coingecko.com/api/v3/');
       apiUrl.search = url.search;
+      
+      // Add the API key to the request
+      apiUrl.searchParams.append('x_cg_demo_api_key', env.COINGECKO_API_KEY);
+
       const apiRequest = new Request(apiUrl, request);
       const response = await fetch(apiRequest);
       
