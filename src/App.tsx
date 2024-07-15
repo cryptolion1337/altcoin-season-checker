@@ -9,6 +9,7 @@ interface Coin {
 }
 
 const EXCLUDED_COINS = ['tether', 'dai', 'usd-coin', 'wrapped-bitcoin', 'staked-ether'];
+const API_URL = process.env.REACT_APP_API_URL || '/api';
 
 const App: React.FC = () => {
   const [isAltcoinSeason, setIsAltcoinSeason] = useState<boolean | null>(null);
@@ -19,7 +20,7 @@ const App: React.FC = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          '/api/coins/markets',
+          `${API_URL}/coins/markets`,
           {
             params: {
               vs_currency: 'usd',
@@ -49,6 +50,7 @@ const App: React.FC = () => {
         setIsAltcoinSeason(outperformingAltcoins.length >= 37); // 75% of 50 is 37.5
         setLoading(false);
       } catch (err) {
+        console.error('Error fetching data:', err);
         setError('Failed to fetch data. Please try again later.');
         setLoading(false);
       }
@@ -57,16 +59,18 @@ const App: React.FC = () => {
     fetchData();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="container">Loading...</div>;
+  if (error) return <div className="container error">{error}</div>;
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
+    <div className="container">
       <h1>Crypto Season Checker</h1>
       {isAltcoinSeason !== null && (
-        <h2>
-          It's currently {isAltcoinSeason ? 'Altcoin' : 'Bitcoin'} Season!
-        </h2>
+        <div className={`season ${isAltcoinSeason ? 'altcoin' : 'bitcoin'}`}>
+          <h2>
+            It's currently {isAltcoinSeason ? 'Altcoin' : 'Bitcoin'} Season!
+          </h2>
+        </div>
       )}
       <p>
         Based on the performance of the top 50 coins (excluding stablecoins and
